@@ -18,19 +18,17 @@
 	limitations under the License.
 
 */
-
 package eu.impact_project.iif.t2.client;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,30 +47,25 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-//import net.sf.taverna.t2.service.webservice.resource.DataValue;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.xmlbeans.impl.util.Base64;
 import org.xml.sax.SAXException;
 
-
 import uk.org.taverna.server.client.*;
 import uk.org.taverna.server.client.connection.HttpBasicCredentials;
+import uk.org.taverna.server.client.connection.HttpBasicCredentials;
+import uk.org.taverna.server.client.connection.params.ConnectionParams;
 import uk.org.taverna.server.client.connection.UserCredentials;
-
+import uk.org.taverna.server.client.connection.UserCredentials;
 import uk.org.taverna.server.client.InputPort;
 import uk.org.taverna.server.client.OutputPort;
-import uk.org.taverna.server.client.PortListValue;
 import uk.org.taverna.server.client.PortDataValue;
+import uk.org.taverna.server.client.PortListValue;
 import uk.org.taverna.server.client.Run;
 import uk.org.taverna.server.client.RunStatus;
 import uk.org.taverna.server.client.Server;
-import uk.org.taverna.server.client.connection.HttpBasicCredentials;
-import uk.org.taverna.server.client.connection.UserCredentials;
-import uk.org.taverna.server.client.connection.params.ConnectionParams;
 
 /**
  * Executes the chosen workflow by uploading it to taverna server
@@ -115,23 +108,21 @@ public class WorkflowRunner extends HttpServlet {
 			long duration = 0;
 			long startTime = System.currentTimeMillis();
 		
-
-
 			final String CONFIG_PATH = getServletContext().getRealPath("/")+"config.properties";
 			File config = new File(CONFIG_PATH);
 			Properties config_prop = new Properties();
 			FileInputStream config_file = null;
 
                         try {
-                  		config_file = new FileInputStream(CONFIG_PATH);
+			    config_file = new FileInputStream(CONFIG_PATH);
                   	} catch (java.io.FileNotFoundException e) {
-				e.printStackTrace();
+			    e.printStackTrace();
                   	}
                   
                   	try {
-				config_prop.load(config_file);
+			    config_prop.load(config_file);
 			} catch (java.io.IOException e) {
-				e.printStackTrace();
+			    e.printStackTrace();
 			}
 
 			String address = config_prop.getProperty("tavernaServer");
@@ -197,8 +188,7 @@ public class WorkflowRunner extends HttpServlet {
 				currentWorkflow.setUrls(inputsText);
 				// currentWorkflow.setUrls(workflowAsString);
 				for (String currentUrl : currentWorkflow.getUrls()) {
-				      if (!currentWorkflow.testUrl(currentUrl))
-				      {
+				      if (!currentWorkflow.testUrl(currentUrl)) {
 					  urlFault = true;
 					  if (!invalidUrls.contains(currentUrl))
 						  invalidUrls.add(currentUrl);
@@ -234,41 +224,38 @@ public class WorkflowRunner extends HttpServlet {
 
 					// if the inputs are just simple values
 					if (currentDepth == 0) {
-						// put the value into taverna-specific map
-						inputData.put(currentName, currentValue);
-
-						// if the inputs are a list of values
+					    // put the value into taverna-specific map
+					    inputData.put(currentName, currentValue);
+					    // if the inputs are a list of values
 					} else if (currentDepth > 0) {
+					    String dataValue = "Lists [\n";
+					    // then the values must be nested in a list
+					    // add the current value
+					    dataValue = dataValue + currentValue + "\n";
 
-						String dataValue = "Lists [\n";
-						// then the values must be nested in a list
-						// add the current value
-						dataValue = dataValue + currentValue + "\n";
-
-						// add all the additional values
-						int i = 0;
-						// the values in the html form are stored in format name+index
-						while (htmlFormItems.get(currentNamePrefixed + i) != null
-								&& !htmlFormItems
-										.get(currentNamePrefixed + i)
-										.equals("")) {
-							String additionalValue = htmlFormItems
-									.get(currentNamePrefixed + i);
-							// valueList.add(new DataValue(additionalValue));
-							dataValue = dataValue + additionalValue + "\n";
-							i++;
-						}
-						// store the list in the map
-						dataValue = dataValue + "]\n";
-						inputData.put(currentName, dataValue);
+					    // add all the additional values
+					    int i = 0;
+					    // the values in the html form are stored in format name+index
+					    while (htmlFormItems.get(currentNamePrefixed + i) != null
+							    && !htmlFormItems
+									    .get(currentNamePrefixed + i)
+									    .equals("")) {
+						    String additionalValue = htmlFormItems
+								    .get(currentNamePrefixed + i);
+						    // valueList.add(new DataValue(additionalValue));
+						    dataValue = dataValue + additionalValue + "\n";
+						    i++;
+					    }
+					    // store the list in the map
+					    dataValue = dataValue + "]\n";
+					    inputData.put(currentName, dataValue);
 					}
 				}
 
 				Map<String, InputPort> inputPorts = runID.getInputPorts();
 				
 				// convert input values from html form to taverna-specific objects
-				for (Map.Entry<String, String> inputWorkflow : inputData.entrySet())
-				{
+				for (Map.Entry<String, String> inputWorkflow : inputData.entrySet()) {
 					runID.getInputPort(inputWorkflow.getKey()).setValue(inputWorkflow.getValue());
 					//System.out.println("INPUT: " +  inputWorkflow.getValue());
 				}
@@ -281,17 +268,15 @@ public class WorkflowRunner extends HttpServlet {
 				j++;
 	
 				// wait until all jobs are done
-				for (Run currentRunID : runIDs)
-				{
-					while (currentRunID.isRunning())
-					{
+				for (Run currentRunID : runIDs) {
+					while (currentRunID.isRunning()) {
 						try {
-							duration = System.currentTimeMillis() - startTime;
-							System.out.println("Waiting for job [" + currentRunID.getIdentifier()
-									+ "] to complete (" + (duration / 1000f) + ")" + " STATUS:" + runID.getStatus());
-							Thread.sleep(1000);
+						    duration = System.currentTimeMillis() - startTime;
+						    System.out.println("Waiting for job [" + currentRunID.getIdentifier()
+								    + "] to complete (" + (duration / 1000f) + ")" + " STATUS:" + runID.getStatus());
+						    Thread.sleep(1000);
 						} catch (InterruptedException e) {
-							System.out.println("HOPELESS");
+						    System.out.println("HOPELESS");
 						}
 					}
 				}
@@ -302,29 +287,22 @@ public class WorkflowRunner extends HttpServlet {
 					// will contain outputs from all ports of the current workflow
 					List<WorkflowOutputPort> workflowOutputPorts = new ArrayList<WorkflowOutputPort>();
 
-					if (currentRunID.isFinished())
-					{
+					if (currentRunID.isFinished()) {
 						System.out.println("Owner: " + currentRunID.isOwner());
 						// get the outputs of the current job
-						if (currentRunID.isOwner())
-						{
+						if (currentRunID.isOwner()) {
 							System.out.println("Output state: " + currentRunID.getExitCode());
 							Map<String, OutputPort> outputPorts = null;
 							if (currentRunID.getOutputPorts() != null)
 									outputPorts = currentRunID.getOutputPorts();
-							for (Map.Entry<String, OutputPort> outputPort : outputPorts.entrySet())
-							{
+							for (Map.Entry<String, OutputPort> outputPort : outputPorts.entrySet()) {
 								WorkflowOutputPort workflowOutPortCurrent = new WorkflowOutputPort();
 	
-								if (outputPort != null)
-								{
-									if (outputPort.getValue().getDepth() == 0)
-									{
+								if (outputPort != null) {
+									if (outputPort.getValue().getDepth() == 0) {
 										workflowOutPortCurrent.setOutput(outputPort.getValue(),false);
 										workflowOutputPorts.add(workflowOutPortCurrent);
-									}
-									else
-									{
+									} else {
 										System.out.println("outputName : " + outputPort.getKey());
 										workflowOutPortCurrent.setOutput(outputPort.getValue(), currentRunID, outputPort.getKey(), outputPort.getValue().getDepth());
 										workflowOutputPorts.add(workflowOutPortCurrent);
@@ -335,12 +313,10 @@ public class WorkflowRunner extends HttpServlet {
 						}
 					}
 					// else System.out.println("[" + currentRunID.getIdentifier() + "] Still not finished. SKIP");
-				
 					allOutputs.add(workflowOutputPorts);
 					workflowIndex++;
-					
 				}
-			}		
+			}
 			//if (allOutputs.isEmpty())
 		
 			session.setAttribute("allOutputs", allOutputs);
@@ -363,7 +339,6 @@ public class WorkflowRunner extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			
 	}
 
 	/**
@@ -416,42 +391,41 @@ public class WorkflowRunner extends HttpServlet {
 		    // check if the string contains only base64 characters
 		    // if yes, then decode it and store in a file
 		    if (longString && header.matches("[a-zA-Z0-9+/=]+")) {
+			// path to the server directory
+			String serverPath = getServletContext().getRealPath("/");
+			String tmpPath = ((File) getServletContext().getAttribute(
+					"javax.servlet.context.tempdir")).getAbsolutePath();
+			// the actual path to store the file
+			String fileName = "wf" + workflowIndex + portName + listIndex;
+			File file = new File(tmpPath + "/" + fileName);
+			OutputStream outStream = new FileOutputStream(file);
 
-			    // path to the server directory
-			    String serverPath = getServletContext().getRealPath("/");
-			    String tmpPath = ((File) getServletContext().getAttribute(
-					    "javax.servlet.context.tempdir")).getAbsolutePath();
-			    // the actual path to store the file
-			    String fileName = "wf" + workflowIndex + portName + listIndex;
-			    File file = new File(tmpPath + "/" + fileName);
-			    OutputStream outStream = new FileOutputStream(file);
+			// decode the base64 string
+			InputStream inStream = new ByteArrayInputStream(Base64
+					.decode(output.getBytes()));
 
-			    // decode the base64 string
-			    InputStream inStream = new ByteArrayInputStream(Base64
-					    .decode(output.getBytes()));
+			// save the file
+			BufferedInputStream bis = new BufferedInputStream(inStream);
+			int bufSize = 1024 * 8;
+			byte[] bytes = new byte[bufSize];
+			int count = bis.read(bytes);
+			while (count != -1 && count <= bufSize) {
+				outStream.write(bytes, 0, count);
+				count = bis.read(bytes);
+			}
+			if (count != -1) {
+				outStream.write(bytes, 0, count);
+			}
+			outStream.close();
 
-			    // save the file
-			    BufferedInputStream bis = new BufferedInputStream(inStream);
-			    int bufSize = 1024 * 8;
-			    byte[] bytes = new byte[bufSize];
-			    int count = bis.read(bytes);
-			    while (count != -1 && count <= bufSize) {
-				    outStream.write(bytes, 0, count);
-				    count = bis.read(bytes);
-			    }
-			    if (count != -1) {
-				    outStream.write(bytes, 0, count);
-			    }
-			    outStream.close();
-
-			    // set the output object properties
-			    wfOutput.setBinary(true);
-			    wfOutput.setUrl(fileName);
+			// set the output object properties
+			wfOutput.setBinary(true);
+			wfOutput.setUrl(fileName);
 
 		    } else {
-			    // or else just store the string in the object
-			    wfOutput.setBinary(false);
-			    wfOutput.setValue(output);
+			// or else just store the string in the object
+			wfOutput.setBinary(false);
+			wfOutput.setValue(output);
 		    }
 
 	    } catch (FileNotFoundException e) {
@@ -461,7 +435,6 @@ public class WorkflowRunner extends HttpServlet {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 	    }
-
 	    return wfOutput;
     }
 }

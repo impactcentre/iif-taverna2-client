@@ -133,12 +133,6 @@ public class WorkflowRunner extends HttpServlet {
 			} catch (java.io.IOException e) {
 				e.printStackTrace();
 			}
-
-		
-              
-			
-
-			
 			String address = config_prop.getProperty("tavernaServer");
 			String cred = config_prop.getProperty("tavernaCred");
 			// Rewrite adress to form: http://user.password@my.tld
@@ -208,69 +202,78 @@ public class WorkflowRunner extends HttpServlet {
 					      // else System.out.println("Url OK: " + currentUrl);
 					}
 					
-					if (!urlFault)
+					if (urlFault)
 					{
-						// will contain all the inputs for the current workflow
-						Map<String, String> inputData = new HashMap<String, String>();
-						
-						for (WorkflowInput currentInput : currentWorkflow.getInputs()) {
-	
-							String currentName = currentInput.getName();
-							String currentNamePrefixed = "workflow" + j + currentName;
-							int currentDepth = currentInput.getDepth();
-	
-							// get the current input value
-							String currentValue = htmlFormItems.get(currentNamePrefixed);
-	
-							// if the inputs are just simple values
-							if (currentDepth == 0) {
-								// put the value into taverna-specific map
-								inputData.put(currentName, currentValue);
-	
-								// if the inputs are a list of values
-							} else if (currentDepth > 0) {
-
-								String dataValue = "Lists [\n";
-								// then the values must be nested in a list
-								// add the current value
-								dataValue = dataValue + currentValue + "\n";
-	
-								// add all the additional values
-								int i = 0;
-								// the values in the html form are stored in format name+index
-								while (htmlFormItems.get(currentNamePrefixed + i) != null
-										&& !htmlFormItems
-												.get(currentNamePrefixed + i)
-												.equals("")) {
-									String additionalValue = htmlFormItems
-											.get(currentNamePrefixed + i);
-									// valueList.add(new DataValue(additionalValue));
-									dataValue = dataValue + additionalValue + "\n";
-									i++;
-								}
-								// store the list in the map
-								dataValue = dataValue + "]\n";
-								inputData.put(currentName, dataValue);
-							}
-						}
-	
-						Map<String, InputPort> inputPorts = runID.getInputPorts();
-						
-						// convert input values from html form to taverna-specific objects
-						for (Map.Entry<String, String> inputWorkflow : inputData.entrySet())
-						{
-							runID.getInputPort(inputWorkflow.getKey()).setValue(inputWorkflow.getValue());
-							//System.out.println("INPUT: " +  inputWorkflow.getValue());
-						}
-						
-						runID.start();
-						//System.out.println("Run URL: "+ runID.getURI() );
-						runIDs.add(runID);
-						//System.err.print("Run UUID: "+ runID.getIdentifier() + " STATUS:" + runID.getStatus() );
-						
-						j++;
+						String error = "";
+						for (String url:invalidUrls)
+							error += url + "<br>";
+						System.out.println("ERRORS: " + error);
+						session.setAttribute("errors", "<em style=\"color:red\">Resources not available:</em> <br>" + error);
+						RequestDispatcher rd = getServletContext().getRequestDispatcher("/");
+	    					rd.forward(request, response);
+						return;
+					} else {
+						session.setAttribute("errors", "");
 					}
-			
+
+					// will contain all the inputs for the current workflow
+					Map<String, String> inputData = new HashMap<String, String>();
+					
+					for (WorkflowInput currentInput : currentWorkflow.getInputs()) {
+					    String currentName = currentInput.getName();
+					    String currentNamePrefixed = "workflow" + j + currentName;
+					    int currentDepth = currentInput.getDepth();
+
+					    // get the current input value
+					    String currentValue = htmlFormItems.get(currentNamePrefixed);
+
+					    // if the inputs are just simple values
+					    if (currentDepth == 0) {
+						    // put the value into taverna-specific map
+						    inputData.put(currentName, currentValue);
+
+						    // if the inputs are a list of values
+					    } else if (currentDepth > 0) {
+
+						    String dataValue = "Lists [\n";
+						    // then the values must be nested in a list
+						    dataValue = dataValue + currentValue + "\n";
+
+						    // add all the additional values
+						    int i = 0;
+						    // the values in the html form are stored in format name+index
+						    //
+						    // Here all the values are added to one string..
+						    // List [ Value1, Value2 ]
+						    while (htmlFormItems.get(currentNamePrefixed + i) != null
+								    && !htmlFormItems
+										    .get(currentNamePrefixed + i)
+										    .equals("")) {
+							    String additionalValue = htmlFormItems
+									    .get(currentNamePrefixed + i);
+							    // valueList.add(new DataValue(additionalValue));
+							    // add this to a stack of variables to run?
+							    dataValue = dataValue + additionalValue + "\n";
+							    i++;
+						    }
+						    // store the list in the map
+						    dataValue = dataValue + "]\n";
+						    inputData.put(currentName, dataValue);
+					    }
+					    Map<String, InputPort> inputPorts = runID.getInputPorts();
+					    // convert input values from html form to taverna-specific objects
+					    for (Map.Entry<String, String> inputWorkflow : inputData.entrySet())
+					    {
+						    runID.getInputPort(inputWorkflow.getKey()).setValue(inputWorkflow.getValue());
+						    //System.out.println("INPUT: " +  inputWorkflow.getValue());
+					    }
+					    runID.start();
+					    //System.out.println("Run URL: "+ runID.getURI() );
+					    runIDs.add(runID);
+					    //System.err.print("Run UUID: "+ runID.getIdentifier() + " STATUS:" + runID.getStatus() );
+					    j++;
+					}
+
 					// wait until all jobs are done
 					for (Run currentRunID : runIDs)
 					{
@@ -297,25 +300,19 @@ public class WorkflowRunner extends HttpServlet {
 						{
 							System.out.println("Owner: " + currentRunID.isOwner());
 							// get the outputs of the current job
-							if (currentRunID.isOwner())
-							{
+							if (currentRunID.isOwner()) {
 								System.out.println("Output state: " + currentRunID.getExitCode());
 								Map<String, OutputPort> outputPorts = null;
+
 								if (currentRunID.getOutputPorts() != null)
 										outputPorts = currentRunID.getOutputPorts();
-								for (Map.Entry<String, OutputPort> outputPort : outputPorts.entrySet())
-								{
+								for (Map.Entry<String, OutputPort> outputPort : outputPorts.entrySet()) {
 									WorkflowOutputPort workflowOutPortCurrent = new WorkflowOutputPort();
-		
-									if (outputPort != null)
-									{
-										if (outputPort.getValue().getDepth() == 0)
-										{
+									if (outputPort != null) {
+										if (outputPort.getValue().getDepth() == 0) {
 											workflowOutPortCurrent.setOutput(outputPort.getValue(),false);
 											workflowOutputPorts.add(workflowOutPortCurrent);
-										}
-										else
-										{
+										} else {
 											System.out.println("outputName : " + outputPort.getKey());
 											workflowOutPortCurrent.setOutput(outputPort.getValue(), currentRunID, outputPort.getKey(), outputPort.getValue().getDepth());
 											workflowOutputPorts.add(workflowOutPortCurrent);

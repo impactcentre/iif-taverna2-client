@@ -360,6 +360,9 @@ Or login to MyExperiment and choose a workflow:
 		} // for (Workflow ...)
 %>
 		<hr></hr>
+		<br><br>
+		<b>Workflow</b> Outputs
+		<br><br>
 <%
 		} // if (wf != null ...) else
 	} // if ... round1
@@ -374,11 +377,6 @@ Or login to MyExperiment and choose a workflow:
 		int i = 1;
 		// go through all workflows
 		for (List<WorkflowOutputPort> currentPorts : allOutputs) {
-%>
-		<br><br>
-		<b>Workflow</b> Outputs
-		<br><br>
-<%
 			// go through all workflow ports
 			for (WorkflowOutputPort port : currentPorts){
 %>
@@ -388,8 +386,9 @@ Or login to MyExperiment and choose a workflow:
 				int j = 1;
 				for (WorkflowOutput output : port.getOutputs()) {
 					if (output.isBinary()){
+						//<a href="FilePrinter?file=<%=output.getUrl() " target="_blank">file=i .=j </a>
 %>
-						<a href="FilePrinter?file=<%=output.getUrl() %>" target="_blank">file<%=i %>.<%=j %></a>
+						<a href="<%=output.getUrl() %>" target="_blank">file</a>
 <%
 					} else {
 

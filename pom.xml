@@ -12,9 +12,12 @@
 		<url>http://www.digitisation.eu/</url>
 	</organization>
 	<inceptionYear>2009</inceptionYear>
-	<scm>
-		<url>https://github.com/impactcentre/interoperability-framework/tree/master/interfaces/taverna/T2-Client</url>
-	</scm>
+    <scm>
+        <connection>scm:git:https://github.com/impactcentre/iif-taverna2-client.git</connection>
+        <developerConnection>scm:git:git@github.com:impactcentre/iif-taverna2-client.git</developerConnection>
+        <url>https://github.com/impactcentre/iif-taverna2-client</url>
+        <tag>HEAD</tag>
+    </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.7</jdk.version>
@@ -31,22 +34,6 @@
 		</site>
 	</distributionManagement>
 	<dependencies>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>taverna-server-rest-api</artifactId>
-			<version>0.2.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sf.taverna.t2</groupId>
-					<artifactId>taverna-server</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.taverna</groupId>
-			<artifactId>taverna-server-client</artifactId>
-			<version>0.9.0</version>
-		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -168,11 +155,17 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		    </repository>
-		    <repository>
-			    <id>repo</id>
-                <url>https://github.com/impactcentre/m2-repo/raw/master/releases</url>
-		    </repository>
+		</repository>
+		<repository>
+			<id>impact</id>
+            <url>https://github.com/impactcentre/m2-repo/raw/master/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+		</repository>
 	</repositories>
 	<build>
 		<plugins>

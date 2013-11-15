@@ -1,4 +1,4 @@
-What is T2-Client:
+What is T2-Client: [![Build Status](https://secure.travis-ci.org/impactcentre/iif-taverna2-client.png?branch=master)](http://travis-ci.org/impactcentre/iif-taverna2-client)
 ------------------
 
 The Taverna 2 Server Client can be used to execute workflows created with Taverna 2 (having the extension .t2flow). 

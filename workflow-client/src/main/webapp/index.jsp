@@ -129,7 +129,13 @@
           Set<String> set = allWfInfos.keySet();
           for (String key : set){
 %>
-            <option value="<%=key %>" <%if (key.equals(selectedGroupName)) { %>selected="selected"<%} %>>
+            <option value="<%=key %>" 
+<%
+              if (key.equals(selectedGroupName)) {
+%>              selected="selected"
+<%            
+            } 
+%>          >
             <%=key %>
             </option>
 <%
@@ -151,7 +157,13 @@
           for (WorkflowInfo info : wfInfos) {
 %>
             <option value="<%=info.getWfId() %>" 
-            <% if(session.getAttribute("currentWfId0") != null && session.getAttribute("currentWfId0").equals(info.getWfId())) { %> selected="selected" <%} %>>
+<% 
+            if (session.getAttribute("currentWfId0") != null && session.getAttribute("currentWfId0").equals(info.getWfId())) {
+%> 
+                selected="selected" 
+<%  
+            } 
+%>          >
             <%=info.getTitle()%>
             </option>
 <%
@@ -160,7 +172,15 @@
           </select>
           <a href="javascript:showDetails()">Details</a>
           <br><br>
-          <input type="checkbox" name="printExamples" <%if(printExamples){ %>checked="checked"<%} %>>Show input values, if available<br><br>
+          <input type="checkbox" name="printExamples" 
+<%
+          if (printExamples) {
+%>
+            checked = "checked"
+<%        
+          } 
+%>        
+          >Show input values, if available<br><br>
           <input type="submit" value="Show input fields"></input>
           </form>
 <%      
@@ -263,46 +283,41 @@
     } // if ... round1
 
     if(request.getAttribute("round2") != null) {
-        List<List<WorkflowOutputPort>> allOutputs = (List<List<WorkflowOutputPort>>) session.getAttribute("allOutputs");
-        String errors = session.getAttribute("errors").toString();
-        if (errors != "") out.print(errors);
-        int i = 1;
-        // go through all workflows
-        for (List<WorkflowOutputPort> currentPorts : allOutputs) {
-          // go through all workflow ports
-          for (WorkflowOutputPort port : currentPorts) {
+      List<List<WorkflowOutputPort>> allOutputs = (List<List<WorkflowOutputPort>>) session.getAttribute("allOutputs");
+      String errors = session.getAttribute("errors").toString();
+      if (errors != "") out.print(errors);
+      // go through all workflows
+      for (List<WorkflowOutputPort> currentPorts : allOutputs) {
+        // go through all workflow ports
+        for (WorkflowOutputPort port : currentPorts) {
 %>
-            <i><%=port.getName() %></i>: 
+          <i><%=port.getName() %></i>: 
 <%
-            // go through all outputs of a port
-            int j = 1;
-            for (WorkflowOutput output : port.getOutputs()) {
-              if (output.isBinary()){
+          // go through all outputs of a port
+          for (WorkflowOutput output : port.getOutputs()) {
+            if (output.isBinary()){
 %>
-                <a href="<%=output.getUrl() %>" target="_blank">file</a>
+              <a href="<%=output.getUrl() %>" target="_blank">file</a>
+<%
+            } else {
+              // check if the text results contain URL
+              String result = output.getValue();
+              String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+              if (result.matches(regex)) {
+%>                        
+                <a href="<%=output.getValue() %>" target="_blank"><%=output.getValue() %></a>
 <%
               } else {
-                // check if the text results contain URL
-                String result = output.getValue();
-                String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-                if (result.matches(regex)) {
-                        
-%>                          
-                  <a href="<%=output.getValue() %>" target="_blank"><%=output.getValue() %></a>
-<%
-                } else {
-                  out.print(output.getValue().replaceAll("\n", "<br>\n"));
-                }
+                out.print(output.getValue().replaceAll("\n", "<br>\n"));
               }
-              if (output != port.getOutputs().get(port.getOutputs().size()-1))
-              out.print(",");
-              j++;
-            } // for ... output
-            out.print("<br><br>");
-          } // for ... port
-          i++;
-        } // for ... currentPorts
-        out.print("<hr>");
+            }
+            if (output != port.getOutputs().get(port.getOutputs().size()-1))
+            out.print(",");
+          } // for ... output
+          out.print("<br><br>");
+        } // for ... port
+      } // for ... currentPorts
+      out.print("<hr>");
     } // if ... round2
 %>
 

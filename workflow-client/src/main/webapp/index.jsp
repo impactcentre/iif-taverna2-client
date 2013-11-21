@@ -74,33 +74,33 @@
 <% 
       if (demoMode == true) {
 %>
-      <form action="WorkflowUploader" method="post" name="uploadWorkflows" id="uploadWorkflows">
-        <input name="myexp_user" type="hidden" value="<%=myexperimentUser%>">
-        <input name="myexp_password" type="hidden" value="<%=myexperimentPass%>">
-      </form>
+        <form action="WorkflowUploader" method="post" name="uploadWorkflows" id="uploadWorkflows">
+          <input name="myexp_user" type="hidden" value="<%=myexperimentUser%>">
+          <input name="myexp_password" type="hidden" value="<%=myexperimentPass%>">
+        </form>
 <% 
       } else {
 %>
-      <form action="WorkflowUploader" method="post" name="uploadWorkflows">
-        Or login to MyExperiment and choose a workflow:
-        <br><br>
-        <table>
-          <tr>
-          <td>
-          User:<br>
-          <input name="myexp_user" type="text" size="10">
-          </td>
-          <td>
-          Password:<br>
-          <input name="myexp_password" type="password" size="10">
-          </td>
-          <td valign="bottom">
-          <input type="submit" value="Login">
-          </td>
-          </tr>
-        </table>
-      </form>
-      <br>
+        <form action="WorkflowUploader" method="post" name="uploadWorkflows">
+          Or login to MyExperiment and choose a workflow:
+          <br><br>
+          <table>
+            <tr>
+            <td>
+            User:<br>
+            <input name="myexp_user" type="text" size="10">
+            </td>
+            <td>
+            Password:<br>
+            <input name="myexp_password" type="password" size="10">
+            </td>
+            <td valign="bottom">
+            <input type="submit" value="Login">
+            </td>
+            </tr>
+          </table>
+        </form>
+        <br>
 <%
       } 
 %>
@@ -108,9 +108,9 @@
 <%
       if (request.getAttribute("login_error") != null) {
 %>
-      <div style="color: red">
-      <%=request.getAttribute("login_error") %>
-      </div>
+        <div style="color: red">
+        <%=request.getAttribute("login_error") %>
+        </div>
 
 <%
       } else if (session.getAttribute("logged_in") != null && session.getAttribute("logged_in").equals("true")) { 
@@ -132,7 +132,8 @@
             <option value="<%=key %>" 
 <%
               if (key.equals(selectedGroupName)) {
-%>              selected="selected"
+%>
+                selected="selected"
 <%            
             } 
 %>          >
@@ -199,8 +200,8 @@
       }
     }
 %>
-    </td>
-    </tr>
+      </td>
+      </tr>
     </table>
     <br>
     <hr>
@@ -236,11 +237,18 @@
 %>
                   <br><%= inputName %>: 
                     <span>
-                        <img onclick="switchInputField(this.parentNode)" alt="switch input type" src="graphics/switch.gif">
-                        <input type="text" size="40" <%if (printExamples) { %>value="<%= inputExample %>"<%} %> name="workflow<%=i + inputName %>">
+                      <img onclick="switchInputField(this.parentNode)" alt="switch input type" src="graphics/switch.gif">
+                      <input type="text" size="40"
+<%
+                      if (printExamples) { 
+%>
+                          value="<%= inputExample %>"
+<%
+                      } 
+%>                    name="workflow<%=i + inputName %>">
                     </span> 
 <%
-                    if(inputDepth > 0){
+                    if(inputDepth > 0) {
 %>
                         <span id="workflow<%=i + inputName %>"></span>
                         <span onclick="addInputField('workflow<%=i + inputName %>')" style="cursor: pointer">+</span>
@@ -295,7 +303,7 @@
 <%
           // go through all outputs of a port
           for (WorkflowOutput output : port.getOutputs()) {
-            if (output.isBinary()){
+            if (output.isBinary()) {
 %>
               <a href="<%=output.getUrl() %>" target="_blank">file</a>
 <%

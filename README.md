@@ -6,7 +6,8 @@ After the user uploads the workflow to be executed, the application presents the
 for the workflow. Currently, the program does not recognize if an input value must be 
 a string or a file. This is why the user must click on the "switch" symbol to choose between
 string and file upload. If the input is multi-valued, more input fields can be added by 
-clicking on the plus sign.
+clicking on the plus sign. If the input of the workflow is a list of depth 1, the workflow
+will be runned multiple times, until the supplied list is empty.
 	
 In addition to uploading a workflow from a local disk, the user can login to 
 [myExperiment](http://www.myexperiment.org/ "myExperiment"). After that, a workflow belonging to the user

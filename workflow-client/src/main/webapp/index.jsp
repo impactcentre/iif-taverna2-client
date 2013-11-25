@@ -22,7 +22,6 @@
   String myexperimentUser = props.getProperty("myexperimentUser");
   String myexperimentPass = props.getProperty("myexperimentPass");
   
-  boolean demoMode = Boolean.parseBoolean(props.getProperty("demoMode"));
   boolean printExamples = true;
 
   if (session.getAttribute("printExamples") != null) printExamples = (Boolean) session.getAttribute("printExamples");
@@ -46,64 +45,38 @@
     <table>
       <tr>
       
-<%
-      if (demoMode == false) {
-%>
       <td valign="top">
       <form action="WorkflowParser" method="post" enctype="multipart/form-data">
         Please upload your workflow file:<br><br><br><br>
         <input type="file" name="file_workflow0" size="15"></input>
         <br><br>
-        <input type="checkbox" name="printExamples"
-<%
-        if (printExamples) {
-%>        checked="checked"
-<%
-        } 
-%>      >Show input values, if available<br><br>
+        <input type="checkbox" name="printExamples" checked="checked">Show input values, if available<br><br>
         <input type="submit" value="Show input fields"></input>
       </form>
       </td>
-<%
-      }
-%>
 
       <td valign="top" style="padding-left: 40px">
       <h1>My Experiment</h1>
-
-<% 
-      if (demoMode == true) {
-%>
-        <form action="WorkflowUploader" method="post" name="uploadWorkflows" id="uploadWorkflows">
-          <input name="myexp_user" type="hidden" value="<%=myexperimentUser%>">
-          <input name="myexp_password" type="hidden" value="<%=myexperimentPass%>">
-        </form>
-<% 
-      } else {
-%>
-        <form action="WorkflowUploader" method="post" name="uploadWorkflows">
-          Or login to MyExperiment and choose a workflow:
-          <br><br>
-          <table>
-            <tr>
-            <td>
-            User:<br>
-            <input name="myexp_user" type="text" size="10">
-            </td>
-            <td>
-            Password:<br>
-            <input name="myexp_password" type="password" size="10">
-            </td>
-            <td valign="bottom">
-            <input type="submit" value="Login">
-            </td>
-            </tr>
-          </table>
-        </form>
-        <br>
-<%
-      } 
-%>
+      <form action="WorkflowUploader" method="post" name="uploadWorkflows">
+      Or login to MyExperiment and choose a workflow:
+      <br><br>
+      <table>
+        <tr>
+        <td>
+        User:<br>
+        <input name="myexp_user" type="text" size="10">
+        </td>
+        <td>
+        Password:<br>
+        <input name="myexp_password" type="password" size="10">
+        </td>
+        <td valign="bottom">
+        <input type="submit" value="Login">
+        </td>
+        </tr>
+      </table>
+      </form>
+      <br>
       <br>
 <%
       if (request.getAttribute("login_error") != null) {
@@ -190,15 +163,7 @@
           <div>There are no workflows in this group</div>
 <%
         }
-    } else {
-      if (demoMode == true) {
-%>
-        <script>
-          loginMyExperiment();
-        </script>
-<%  
       }
-    }
 %>
       </td>
       </tr>

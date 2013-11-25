@@ -130,7 +130,7 @@ public class WorkflowRunner extends HttpServlet {
             // Rewrite adress to form: http://user.password@my.tld
             // Example https://taverna.taverna@localhost:8443/taverna-server
             address = address.split("//")[0] + "//" + cred.split(":")[0] + "." + cred.split(":")[1] + "@" + address.split("//")[1];
-
+            System.out.println("Using taverna-server: " + address);
 
             URI serverURI = new URI(address);
             Server tavernaRESTClient = new Server(serverURI);
@@ -160,7 +160,6 @@ public class WorkflowRunner extends HttpServlet {
                 String userForm = htmlFormItems.get("user");
                 String passForm = htmlFormItems.get("pass");
                 
-                                    
                 int cont = 0;
                 for (Wsdl currentWsdl : currentWorkflow.getWsdls()) {
                     currentWsdl.setUser(userForm);

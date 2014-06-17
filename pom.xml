@@ -152,14 +152,12 @@
 		</repository>
 		<repository>
 			<id>impact</id>
-            <url>http://kbresearch.dyndns.org/m2/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <url>http://dl.bintray.com/impactocr/maven</url>
 		</repository>
+        <repository>
+            <id>impact_dev</id>
+            <url>https://github.com/impactcentre/m2-repo/raw/master/releases</url>
+        </repository>
 	</repositories>
 	<build>
 		<plugins>
